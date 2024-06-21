@@ -14,8 +14,11 @@ fetch('https://northwind.vercel.app/api/suppliers')
 function addData(data) {
     data.forEach(post => {
         let row = document.createElement('tr');
+        let updateBtn = document.createElement('button')
+        updateBtn.textContent = "Update"
+        updateBtn.classList.add("updateBtn");
         let btn = document.createElement('button')
-        btn.textContent = "delete"
+        btn.textContent = "Delete";
         btn.classList.add("deleteBtn");
 
         Object.values(post).forEach((value) => {
@@ -24,7 +27,7 @@ function addData(data) {
             let cityCell = document.createElement('td');
             let countryCell = document.createElement('td');
             if (typeof value == "object") {
-                cityCell.textContent = value.city
+                cityCell.textContent = value.city   
                 countryCell.textContent = value.country
                 row.appendChild(cityCell);
                 row.appendChild(countryCell)
@@ -34,21 +37,19 @@ function addData(data) {
                 row.appendChild(cell);
             }
         });
+        updateBtn.setAttribute('data', Object.values(post)[0])
+        updateBtn.setAttribute('onclick', `document.location = '/update.html?id=${Object.values(post)[0]}'`)
         btn.setAttribute('data', Object.values(post)[0]);
         btn.addEventListener("click", function () {
             deleteData(btn.getAttribute("data"));
-            
         })
         row.appendChild(btn)
+        row.appendChild(updateBtn)
         tBody.appendChild(row);
     });
 
 
 }
-
-
-
-
 let id_input = document.querySelector(".id-input");
 let company_name_input = document.querySelector(".company-name-input");
 let contact_name_input = document.querySelector(".contact-name-input")
@@ -79,7 +80,7 @@ document.querySelector(".save-btn").addEventListener("click", function () {
     })
         .then((response) => response.json())
         .then((data) => {
-            alert("Successfully posted!");
+            alert("Successfully posted!",data);
 
         })
         .catch((error) => {
@@ -92,4 +93,5 @@ function deleteData(id) {
     fetch(`https://northwind.vercel.app/api/suppliers/${id}`, {
         method: "DELETE"
     }).then(response => response.json()).then(data => console.log(data))
+    location.reload()
 }
